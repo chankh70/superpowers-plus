@@ -15,6 +15,47 @@ This fork trims what's no longer needed and adds improvements to core skills:
 - **Executing Plans** — "surgical changes only" rule to scope-limit each task's blast radius
 - **Test orchestration** — `tests/run-all.sh` aggregates all 10 sub-runners with pass/fail counts; wiring regression test ensures every sub-runner stays referenced
 
+## What's Integrated from superpowers-optimized (v6.1.0)
+
+This release merges the best components from the [superpowers-optimized](https://github.com/obra/superpowers-optimized) fork:
+
+### New Skills (+11)
+- **token-efficiency** — Always-on baseline: parallel dispatch, exploration tracking, concise responses
+- **context-management** — Cross-session state (project-map.md, state.md, session-log.md) — never re-explore
+- **error-recovery** — known-issues.md error→solution map — fix recurring bugs in one step
+- **self-consistency-reasoner** — Multi-path reasoning gate (3–5 hypotheses, majority vote, confidence gating)
+- **refactoring** — Behavior-locked structural changes with characterization test safety net
+- **dependency-management** — Incremental updates with CVE handling and impact assessment
+- **performance-investigation** — Measure-first profiling (Baseline → Profile → Hypothesize → Fix → Re-measure)
+- **premise-check** — "Should this exist?" gate before any design or plan
+- **deliberation** — Stakeholder-perspective decision framing before brainstorming
+- **frontend-design** — Production-grade UI (25 styles, 30 industry categories, WCAG AA, 10 quality standards)
+- **claude-md-creator** — Minimal high-signal CLAUDE.md/AGENTS.md generation
+
+### Enhanced Skills (+4)
+- **using-superpowers** — 3-tier classification (micro/light/full), EnterPlanMode intercept, routing guide for all 25 skills
+- **systematic-debugging** — Phase 0 (check known-issues), Self-Consistency Gate, post-fix KB updates
+- **verification-before-completion** — Stub scan, config change verification, self-consistency evidence evaluation
+- **test-driven-development** — Test infrastructure check, rationalization table, advanced test strategy
+
+### Safety Hooks
+- **Block dangerous commands** — 26 destructive patterns (rm -rf /, force push to main, fork bombs, etc.)
+- **Protect secrets** — 50+ file patterns + 14 hardcoded secret detection patterns
+
+### Bash Smart-Compress
+- ~76% token savings on noisy commands (git status, npm install, passing tests)
+- Opt-out: `SP_NO_COMPRESS=1`
+
+### Tracking & Reminders
+- Edit tracking, session stats, TDD/commit/state.md staleness reminders
+- Opt-out: `SP_DISABLE_REMINDERS=1`
+
+### Skill Activator
+- Automatic skill routing via keyword + intent pattern matching (22 rules)
+- Surfaces relevant session-log and known-issues entries mid-conversation
+
+Full details: [RELEASE-NOTES.md](RELEASE-NOTES.md) and [integration summary](docs/superpowers/specs/2026-06-28-final-integration-summary.md).
+
 ## Quickstart
 
 Give your agent Superpowers: [Claude Code](#claude-code), [Antigravity](#antigravity), [Codex App](#codex-app), [Codex CLI](#codex-cli), [Cursor](#cursor), [Factory Droid](#factory-droid), [Gemini CLI](#gemini-cli), [GitHub Copilot CLI](#github-copilot-cli), [Kimi Code](#kimi-code), [OpenCode](#opencode), [Pi](#pi).
@@ -209,58 +250,88 @@ The Pi package loads the Superpowers skills and a small extension that injects t
 
 ## The Basic Workflow
 
-1. **brainstorming** - Activates before writing code. Refines rough ideas through questions, explores alternatives, presents design in sections for validation. Saves design document.
+Every task is classified into one of three levels before work begins:
 
-2. **using-git-worktrees** - Activates after design approval. Creates isolated workspace on new branch, runs project setup, verifies clean test baseline.
+- **Micro** — Typos, single renames, 1-line config changes. Just do it. No skills needed.
+- **Lightweight** — Small changes (~2 files, no new behavior, no cross-module risk). Go directly to implementation, gate with `verification-before-completion`.
+- **Full** — Anything beyond micro or lightweight. Follow the complete pipeline below.
 
-3. **writing-plans** - Activates with approved design. Breaks work into bite-sized tasks (2-5 minutes each). Every task has exact file paths, complete code, verification steps.
+The agent remembers context across sessions via `project-map.md`, `state.md`, `session-log.md`, and `known-issues.md` — no re-exploring or re-debugging work you've already done.
 
-4. **subagent-driven-development** or **executing-plans** - Activates with plan. Dispatches fresh subagent per task with two-stage review (spec compliance, then code quality), or executes in batches with human checkpoints.
+For full tasks, the pipeline runs:
 
-5. **test-driven-development** - Activates during implementation. Enforces RED-GREEN-REFACTOR: write failing test, watch it fail, write minimal code, watch it pass, commit. Deletes code written before tests.
+1. **premise-check** — "Should this exist at all?" Gate before any design or plan.
 
-6. **requesting-code-review** - Activates between tasks. Reviews against plan, reports issues by severity. Critical issues block progress.
+2. **brainstorming** — Activates before writing code. Refines rough ideas through questions, explores alternatives with parallel subagent fan-out, presents design in sections for validation. Saves design document.
 
-7. **finishing-a-development-branch** - Activates when tasks complete. Verifies tests, presents options (merge/PR/keep/discard), cleans up worktree.
+3. **using-git-worktrees** — Activates after design approval. Creates isolated workspace on new branch, runs project setup, verifies clean test baseline.
+
+4. **writing-plans** — Activates with approved design. Breaks work into bite-sized tasks (2-5 minutes each). Every task has exact file paths, complete code, verification steps.
+
+5. **subagent-driven-development** or **executing-plans** — Activates with plan. Dispatches fresh subagent per task with two-stage review (spec compliance, then code quality), or executes with surgical-changes-only rule.
+
+6. **test-driven-development** — Activates during implementation. Enforces RED-GREEN-REFACTOR: write failing test, watch it fail, write minimal code, watch it pass, commit.
+
+7. **requesting-code-review** — Activates between tasks. Reviews against plan, reports issues by severity. Critical issues block progress.
+
+8. **verification-before-completion** — Stub scan, config verification, self-consistency check before claiming done.
+
+9. **finishing-a-development-branch** — Activates when tasks complete. Verifies tests, presents options (merge/PR/keep/discard), cleans up worktree.
 
 **The agent checks for relevant skills before any task.** Mandatory workflows, not suggestions.
 
 ## What's Inside
 
-### Skills Library
+### Skills Library (25 total)
 
 **Testing**
-
-- **test-driven-development** - RED-GREEN-REFACTOR cycle (includes testing anti-patterns reference)
+- **test-driven-development** — RED-GREEN-REFACTOR cycle with advanced test strategy and rationalization table
 
 **Debugging**
-
-- **systematic-debugging** - 4-phase root cause process (includes root-cause-tracing, defense-in-depth, condition-based-waiting techniques)
-- **verification-before-completion** - Ensure it's actually fixed
+- **systematic-debugging** — 5-phase root cause process with Self-Consistency Gate and known-issues integration
+- **verification-before-completion** — Stub scan, config change verification, self-consistency evidence evaluation
 
 **Collaboration**
+- **brainstorming** — Socratic design refinement with parallel subagent exploration
+- **writing-plans** — Incremental plan-writing with Problem Statement, User Stories, and Global Constraints
+- **executing-plans** — Task execution with surgical-changes-only rule
+- **dispatching-parallel-agents** — Concurrent subagent workflows
+- **requesting-code-review** — Pre-review checklist with security review
+- **receiving-code-review** — Responding to feedback
+- **using-git-worktrees** — Parallel development branches with native tool preference
+- **finishing-a-development-branch** — Merge/PR decision workflow with provenance-based cleanup
+- **subagent-driven-development** — Fast iteration with two-stage review
 
-- **brainstorming** - Socratic design refinement
-- **writing-plans** - Detailed implementation plans
-- **executing-plans** - Batch execution with checkpoints
-- **dispatching-parallel-agents** - Concurrent subagent workflows
-- **requesting-code-review** - Pre-review checklist
-- **receiving-code-review** - Responding to feedback
-- **using-git-worktrees** - Parallel development branches
-- **finishing-a-development-branch** - Merge/PR decision workflow
-- **subagent-driven-development** - Fast iteration with two-stage review (spec compliance, then code quality)
+**Memory & Efficiency**
+- **token-efficiency** — Always-on baseline: parallel dispatch, exploration tracking, concise responses
+- **context-management** — Cross-session state (project-map.md, state.md, session-log.md)
+- **error-recovery** — known-issues.md error→solution map
+- **self-consistency-reasoner** — Internal multi-path reasoning gate (not user-invocable)
+
+**Specialized Workflows**
+- **refactoring** — Behavior-locked structural changes with characterization test safety net
+- **dependency-management** — Incremental updates with CVE handling and impact assessment
+- **performance-investigation** — Measure-first profiling (Baseline → Profile → Hypothesize → Fix → Re-measure)
+- **frontend-design** — Production-grade UI with 25 styles, 30 industry categories, WCAG AA compliance
+
+**Design & Decision**
+- **premise-check** — "Should this exist?" gate before any design or plan
+- **deliberation** — Stakeholder-perspective decision framing before brainstorming
+- **claude-md-creator** — Minimal high-signal CLAUDE.md/AGENTS.md generation
 
 **Meta**
-
-- **writing-skills** - Create new skills following best practices (includes testing methodology)
-- **using-superpowers** - Introduction to the skills system
+- **writing-skills** — Create new skills following best practices
+- **using-superpowers** — Entry point with 3-tier classification, routing guide for all 25 skills
 
 ## Philosophy
 
-- **Test-Driven Development** - Write tests first, always
-- **Systematic over ad-hoc** - Process over guessing
-- **Complexity reduction** - Simplicity as primary goal
-- **Evidence over claims** - Verify before declaring success
+- **Test-Driven Development** — Write tests first, always. Red-green-refactor is non-negotiable.
+- **Systematic over ad-hoc** — Process over guessing. Every bug gets root-cause analysis, not a patch.
+- **Measurement-first** — Profile before optimizing. "I think this is faster" is not evidence.
+- **Safety-by-default** — Dangerous commands are blocked, secrets are protected. Defense-in-depth, not trust.
+- **Cross-session continuity** — Never re-explore, re-propose, or re-debug. State persists across sessions.
+- **Complexity reduction** — Simplicity as primary goal. Premise-check before building. YAGNI.
+- **Evidence over claims** — Verify before declaring success. Stub scan before claiming completion.
 
 Read [the original release announcement](https://blog.fsck.com/2025/10/09/superpowers/).
 

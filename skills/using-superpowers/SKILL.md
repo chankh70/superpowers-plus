@@ -79,6 +79,93 @@ digraph skill_flow {
 }
 ```
 
+## When the User Names a Specific Skill
+
+If the user's prompt references a skill by name (e.g., "use brainstorming," "use context management," "run verification"), that is a **Skill tool invocation request**:
+
+1. Still check for relevant skills — the named skill may not be the only one that applies.
+2. **Invoke the named skill via the `Skill` tool.** Do not re-implement the skill's purpose with ad-hoc agents, manual file reads, or improvised workflows. The skill contains tested, structured logic — use it.
+3. Skip complexity classification if the user already chose the route.
+
+This is the most common cause of entry sequence bypass: the AI interprets "use X skill" as a goal to achieve creatively rather than as a tool invocation. It is always a tool invocation.
+
+## EnterPlanMode Intercept
+
+If Claude is about to enter plan mode (`EnterPlanMode`), check whether brainstorming has been completed for the current task:
+
+- **No brainstorming done for this task**: invoke `brainstorming` first — plan mode without a validated design leads to plans built on unexamined assumptions.
+- **Brainstorming already completed and design approved**: proceed to plan mode / `writing-plans`.
+
+## Complexity Classification
+
+Classify every task into one of three levels before acting.
+
+### Hard overrides — check these first, before anything else
+
+If any of the following are true, classify as **full** immediately — do not evaluate the lightweight criteria:
+
+- The change adds, modifies, or removes a condition, gate, or trigger that determines when behavior fires
+- The change affects what the user sees or experiences (excluding cosmetic text changes to existing UI — e.g., updating a label, rewording a message, or changing static copy that doesn't alter flow or behavior)
+- The change modifies a file that other components depend on (routing rules, entry sequences, config registries, shared hooks)
+- The change introduces a path or outcome that didn't exist before
+
+**When in doubt, classify as full.** An unnecessary brainstorming session costs one extra round. Skipping brainstorming on a task that needed it ships a gap. The asymmetry is not equal — always err toward full.
+
+### Micro (skip everything)
+- Typo fix, single variable rename, 1-line config change
+- **Action:** Just do it. No skills needed.
+
+### Lightweight (fast path)
+All of these must be true:
+- Change scope is small (~2 files or fewer)
+- No new behavior or architecture change
+- No cross-module dependency risk
+- No migration or data-shape change
+
+**Before classifying as lightweight:** explicitly state in one sentence why each of the four criteria above is satisfied. Do not assume. If you cannot articulate any one of them clearly, classify as full.
+
+**Action:** Go directly to implementation. Only gate: invoke `verification-before-completion` when done. Skip brainstorming, planning, worktrees, and parallel dispatch.
+
+**Exception:** If a dedicated implementation skill exists for this specific task (check the Routing Guide), invoke it — lightweight skips workflow overhead, not implementation skills.
+
+### Full (complete pipeline)
+Anything that doesn't qualify as micro or lightweight.
+
+**Action:** Follow the Routing Guide below for the full skill pipeline.
+
+## Routing Guide
+
+- *Is this worth building at all?* → `premise-check`
+- Complex decision with unclear options or possible mis-framing: `deliberation` → `brainstorming` → `writing-plans`
+- New behavior or architecture (problem is well-framed): `brainstorming` → `writing-plans`
+- Plan execution (same session, with optional parallel waves): `subagent-driven-development`
+- Plan execution (separate session): `executing-plans`
+- Experimental or risky work needing branch isolation: `using-git-worktrees` (run before implementation)
+- Bug/test failure: `systematic-debugging` → `test-driven-development`
+- Completion claim: `verification-before-completion`
+- Branch integration: `finishing-a-development-branch`
+- Code review (includes security): `requesting-code-review` / `receiving-code-review`
+- Independent parallel tasks outside of plan execution: `dispatching-parallel-agents`
+- Cross-session state persistence: `context-management`
+- Known issue tracking / save recurring fixes: `error-recovery`
+- Structural changes without behavior change: `refactoring`
+- Dependency updates, security patches, migrations: `dependency-management`
+- Performance bottlenecks, profiling, optimization: `performance-investigation`
+- "Should I build this at all?" — premise validation before design: `premise-check`
+- UI/frontend implementation: `frontend-design`
+- Create or update CLAUDE.md/AGENTS.md context files: `claude-md-creator`
+- *(Internal skills — not directly routed):* `self-consistency-reasoner` is invoked internally by `systematic-debugging` and `verification-before-completion`; do not invoke it directly. `token-efficiency` is always-on and invoked at session start.
+
+## Entry Sequence
+
+Before technical execution:
+
+1. Invoke `token-efficiency` at session start — applies to all sessions, always.
+2. If resuming work from a prior session, read `state.md` if it exists.
+3. If `known-issues.md` exists at the project root, read it to avoid rediscovering known error→solution mappings.
+4. If `project-map.md` exists at the project root, read it to orient to the project structure without re-globbing or re-reading known files.
+5. Classify the task (see Complexity Classification above) and follow the path.
+
 ## Red Flags
 
 These thoughts mean STOP—you're rationalizing:

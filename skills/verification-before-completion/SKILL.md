@@ -73,6 +73,18 @@ Skip any step = lying, not verifying
 | "Partial check is enough" | Partial proves nothing |
 | "Different words so rule doesn't apply" | Spirit over letter |
 
+## Stub Scan (Implementation Tasks)
+
+When verifying completion of any task that created or modified production code, run a stub scan before claiming done:
+
+```bash
+grep -rn "TODO\|FIXME\|placeholder\|NotImplementedError\|raise NotImplementedError" <src-dir> \
+  --include="*.ts" --include="*.js" --include="*.py" --include="*.go" --include="*.rs" \
+  | grep -v -i "test\|spec\|__tests__"
+```
+
+Adjust `<src-dir>` and `--include` patterns to the project's language and source structure. If any match falls in a file this task created or modified: the task is not done. Remove the stub or confirm with the user it is intentional before claiming completion.
+
 ## Key Patterns
 
 **Tests:**
@@ -86,6 +98,8 @@ Skip any step = lying, not verifying
 ✅ Write → Run (pass) → Revert fix → Run (MUST FAIL) → Restore → Run (pass)
 ❌ "I've written a regression test" (without red-green verification)
 ```
+
+A regression test that has never been seen failing proves nothing — it might pass for the wrong reason.
 
 **Build:**
 ```
@@ -113,6 +127,38 @@ From 24 failure memories:
 - Missing requirements shipped - incomplete features
 - Time wasted on false completion → redirect → rework
 - Violates: "Honesty is a core value. If you lie, you'll be replaced."
+
+## Configuration Change Verification
+
+When a change affects provider selection, feature flags, environment variables, or credentials:
+
+Do not claim success based on operation success alone. Verify the **outcome reflects the intended change**.
+
+| Change | Insufficient | Required |
+|--------|-------------|----------|
+| Switch API/LLM provider | Status 200 | Response contains expected provider or model name |
+| Enable feature flag | No errors | Feature behavior is actually active |
+| Change environment | Deploy succeeds | Logs or env vars reference the new environment |
+| Set credentials | Auth succeeds | Authenticated identity or context is correct |
+
+**Gate:**
+1. Identify: what should be *different* after this change?
+2. Locate: where is that difference observable? (response field, log line, runtime behavior)
+3. Run: a command that shows the observable difference.
+4. Verify: output contains the expected difference — not just that the operation completed.
+
+## Self-Consistency Verification
+
+When the verification reasoning is non-trivial (multi-step inference, ambiguous evidence, or configuration changes), apply multi-path reasoning (see `self-consistency-reasoner`) before declaring the verdict:
+
+1. Generate 3 **independent** reasoning paths evaluating: "Does this evidence actually prove the claim?"
+2. Each path should approach the evaluation differently: one checks what the evidence proves, one checks what it *doesn't* prove, one considers alternative explanations for the output.
+3. Take the majority-vote verdict:
+   - **All agree "verified"**: claim is proven.
+   - **Majority agrees but minority dissents**: flag what the dissenting path identified — it may reveal a gap in the evidence.
+   - **No majority**: evidence is insufficient. Do not claim completion. State what additional evidence is needed.
+
+This prevents the most expensive verification failure: confidently declaring "done" based on evidence that doesn't actually prove what you think it proves.
 
 ## When To Apply
 

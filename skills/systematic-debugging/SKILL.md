@@ -43,9 +43,15 @@ Use for ANY technical issue:
 - You're in a hurry (rushing guarantees rework)
 - Manager wants it fixed NOW (systematic is faster than thrashing)
 
-## The Four Phases
+## The Five Phases
 
 You MUST complete each phase before proceeding to the next.
+
+### Phase 0: Check Known Issues
+
+- If `known-issues.md` exists at the project root, search it for the error message, error code, or failing test name.
+- If a match is found, try the documented solution **first**. If it resolves the issue, stop — no further investigation needed.
+- If no match or the documented solution doesn't work, proceed to Phase 1.
 
 ### Phase 1: Root Cause Investigation
 
@@ -65,9 +71,9 @@ You MUST complete each phase before proceeding to the next.
 
 3. **Check Recent Changes**
    - What changed that could cause this?
-   - Git diff, recent commits
-   - New dependencies, config changes
-   - Environmental differences
+   - If `context-snapshot.json` exists at the project root: read it. The `changed_files` and `recent_commits` fields answer this immediately without additional git commands.
+   - Otherwise: run `git log --oneline -10` and `git diff HEAD~1..HEAD --name-only`.
+   - New dependencies, config changes, environmental differences
 
 4. **Gather Evidence in Multi-Component Systems**
 
@@ -144,11 +150,19 @@ You MUST complete each phase before proceeding to the next.
 
 ### Phase 3: Hypothesis and Testing
 
-**Scientific method:**
+**Self-Consistency Gate — Before committing to a hypothesis, apply multi-path reasoning (see `self-consistency-reasoner`):**
 
-1. **Form Single Hypothesis**
-   - State clearly: "I think X is the root cause because Y"
-   - Write it down
+1. Generate 3-5 **independent** root cause hypotheses. Vary your approach: trace forward from inputs, backward from the error, from recent changes, from similar past bugs.
+2. For each path, reason independently to a conclusion — do not let earlier hypotheses contaminate later ones.
+3. Take the majority-vote diagnosis. Report confidence:
+   - **High** (80-100% agreement): proceed to test the majority hypothesis.
+   - **Moderate** (60-79%): proceed but note the minority hypothesis — test it next if the majority fails.
+   - **Low** (<=50%): **STOP.** Do not pick a hypothesis. The bug is ambiguous or multi-causal. Gather more evidence (add logging, reproduce under different conditions) before choosing a direction.
+
+Then for the selected hypothesis, apply the scientific method:
+
+1. **State the Hypothesis Clearly**
+   - "I think X is the root cause because Y"
    - Be specific, not vague
 
 2. **Test Minimally**
@@ -158,8 +172,9 @@ You MUST complete each phase before proceeding to the next.
 
 3. **Verify Before Continuing**
    - Did it work? Yes → Phase 4
-   - Didn't work? Form NEW hypothesis
+   - Didn't work? Discard the hypothesis entirely and form a NEW one
    - DON'T add more fixes on top
+   - **Never stack guesses.** One hypothesis at a time, tested in isolation.
 
 4. **When You Don't Know**
    - Say "I don't understand X"
@@ -229,7 +244,7 @@ If you catch yourself thinking:
 
 **ALL of these mean: STOP. Return to Phase 1.**
 
-**If 3+ fixes failed:** Question the architecture (see Phase 4.5)
+**If 3+ fixes failed:** Question the architecture (see Phase 4 "If Fix Doesn't Work")
 
 ## your human partner's Signals You're Doing It Wrong
 
@@ -259,10 +274,11 @@ If you catch yourself thinking:
 
 | Phase | Key Activities | Success Criteria |
 |-------|---------------|------------------|
-| **1. Root Cause** | Read errors, reproduce, check changes, gather evidence | Understand WHAT and WHY |
+| **0. Known Issues** | Check known-issues.md for matching error | Known fix found or proceed |
+| **1. Root Cause** | Read errors, reproduce, check changes (context-snapshot), gather evidence | Understand WHAT and WHY |
 | **2. Pattern** | Find working examples, compare | Identify differences |
-| **3. Hypothesis** | Form theory, test minimally | Confirmed or new hypothesis |
-| **4. Implementation** | Create test, fix, verify | Bug resolved, tests pass |
+| **3. Hypothesis** | Self-consistency gate → form theory, test minimally | Confirmed or new hypothesis |
+| **4. Implementation** | Create test, fix, verify, update KB | Bug resolved, tests pass |
 
 ## When Process Reveals "No Root Cause"
 
@@ -275,6 +291,14 @@ If systematic investigation reveals issue is truly environmental, timing-depende
 
 **But:** 95% of "no root cause" cases are incomplete investigation.
 
+## Post-Fix: Update Knowledge Base
+
+After resolving a bug:
+
+1. **Recurring error?** (environment-dependent, configuration, platform-specific, external-state) → offer to add the error→solution mapping to `known-issues.md` using the format defined in `error-recovery`.
+
+2. **Permanent constraint discovered?** (API limitation, platform behavior, library quirk that will never change) → offer to add it to `project-map.md` Critical Constraints section via `context-management`. These are facts every future session needs, not just error→fix mappings.
+
 ## Supporting Techniques
 
 These techniques are part of systematic debugging and available in this directory:
@@ -286,6 +310,8 @@ These techniques are part of systematic debugging and available in this director
 **Related skills:**
 - **superpowers-plus:test-driven-development** - For creating failing test case (Phase 4, Step 1)
 - **superpowers-plus:verification-before-completion** - Verify fix worked before claiming success
+- **superpowers-plus:self-consistency-reasoner** - Multi-path reasoning for root cause diagnosis
+- **superpowers-plus:error-recovery** - Consult and update project-specific known issues
 
 ## Real-World Impact
 

@@ -2,6 +2,83 @@
 
 > **Note:** This file is inherited from upstream [obra/superpowers](https://github.com/obra/superpowers/releases) (MIT-licensed). The fork's own changes are documented in this fork's git log and tags; only changes that mirror an upstream release appear here.
 
+## v6.1.0 (2026-06-28)
+
+Integration release — merges the most impactful components from `superpowers-optimized` (v6.6.1) into `superpowers-plus`. Adds cross-session memory, safety hooks, Bash token compression, skill-activation routing, session tracking, stop reminders, and 11 new skills. All existing plus features (parallel brainstorming, batched clarifying questions, server hardening, surgical changes rule, test orchestration, 9+ harness support) are preserved — zero original code removed. See `docs/superpowers/specs/2026-06-28-final-integration-summary.md` for the full integration analysis.
+
+### New Skills (11)
+
+**Memory & efficiency (Phase 1):**
+- **token-efficiency** — Always-on operational baseline. Enforces parallel batching, exploration tracking, and response conciseness. Invoked at session start.
+- **context-management** — Cross-session state persistence. Generates `project-map.md` (structure cache), maintains `state.md` (task snapshot for resume), and writes `session-log.md` (decision history). Eliminates re-exploration and re-debugging across sessions.
+- **error-recovery** — Known issue tracking. Maintains `known-issues.md` — an error→solution map so recurring failures are recognized and fixed in one step rather than re-debugged.
+- **self-consistency-reasoner** — Internal multi-path reasoning gate. Generates 3-5 independent hypotheses, majority vote, and confidence gating. Invoked automatically by `systematic-debugging` and `verification-before-completion` — not user-invocable.
+
+**Specialized workflows (Phase 4):**
+- **refactoring** — Behavior-locked structural changes. Locks current behavior with characterization tests before any structural move, verifies after each step, and audits imports/references after completion. Distinct from brainstorming (designs new behavior) and debugging (fixes bugs).
+- **dependency-management** — Incremental dependency updates. Audits outdated packages, assesses changelogs and breaking changes, updates one at a time with verification after each. Handles CVEs, lockfile conflicts, and version pinning strategy.
+- **performance-investigation** — Measure-first profiling. Baseline → Profile → Hypothesize → Fix → Re-measure. Enforces one fix at a time with quantitative before/after comparison. Rejects optimization without measurement.
+- **premise-check** — "Should this exist?" validation before any design or plan. Three questions: does the problem exist? Is the solution proportional? What's the cost of not building? Stops unnecessary work before it starts.
+- **deliberation** — Stakeholder-perspective decision framing. Assembles 3-5 named perspectives that each speak once without debate, then surfaces convergence and live tension. Used before `brainstorming` when the decision space is unclear.
+- **frontend-design** — Professional UI implementation. Design System Generation framework with 25 visual styles and 30 industry categories. Enforces accessibility (WCAG AA), responsive design, 10 quality standards, and a pre-delivery checklist. Includes `tailwind-v4.md` reference for Tailwind CSS v4 class name changes and new features.
+- **claude-md-creator** — Minimal, high-signal context file generation. Based on empirical research showing human-written, minimal context files improve agent performance by ~4% while LLM-generated ones decrease it by 3%. Only includes what the agent cannot discover itself.
+
+### Enhanced Skills (4)
+
+- **using-superpowers** — Added 3-tier complexity classification (micro/lightweight/full + hard overrides), EnterPlanMode intercept, routing guide covering all 25 skills, entry sequence with memory files, and "When the User Names a Specific Skill" directive. Preserves the Red Flags table, Instruction Priority hierarchy, platform-adaptation tool mapping, and SUBAGENT-STOP gate.
+- **systematic-debugging** — Added Phase 0 (Check Known Issues before investigation), Self-Consistency Gate in Phase 3 (3-5 independent root-cause hypotheses, majority vote with confidence gating), context-snapshot integration, and post-fix knowledge base update instructions.
+- **verification-before-completion** — Added stub scan (grep for TODO/FIXME/placeholder before claiming completion), configuration change verification, self-consistency evidence evaluation, and red-green regression test cycle requirement.
+- **test-driven-development** — Added test infrastructure check at cycle start, rationalization table (excuse vs reality), and advanced test strategy section.
+
+### Safety Hooks
+
+- **block-dangerous-commands.js** — PreToolUse(Bash) hook blocking 26 destructive command patterns: `rm -rf /`, force push to main, `chmod 777`, fork bombs, `git reset --hard`, and more. Fails open — returns `{}` on any error.
+- **protect-secrets.js** — PreToolUse(Read|Edit|Write|Bash) hook protecting 50+ sensitive file patterns (`.env`, SSH keys, AWS credentials, etc.) and 14 hardcoded secret patterns in source code. Fails open.
+
+### Bash Smart-Compress
+
+- **bash-compress-hook.js** — PreToolUse(Bash) hook intercepting Bash tool calls and rewriting compressible ones through the optimizer. ~76% token savings on mixed sessions.
+- **bash-optimizer.js** — Executes compressed commands with transparency markers and adaptive re-run detection (same command within 60s passes through raw).
+- **compression-rules.js** — 17 command types across 2 tiers: Tier 1 (safe to summarize — passing tests → summary only, npm install → one-line summary, git status → filtered). Tier 2 (raw pass-through — diffs, file reads, failed commands, verbose/debug output).
+- Opt-out: `SP_NO_COMPRESS=1` environment variable.
+
+### Memory System
+
+- **context-engine.js** — Async SessionStart hook auto-generating `context-snapshot.json` on session start (changed files, recent commits, blast radius).
+- **session-start hook** — Enhanced to inject project-map.md, session-log.md (last 2 [saved] entries), state.md (with staleness gate), known-issues.md (open entries, capped at 5), and context-snapshot.json at session start. All injections are backward-compatible — silent no-ops when files don't exist.
+
+### Tracking & Session Awareness
+
+- **track-edits.js** — PostToolUse(Edit|Write) hook logging every file edit with timestamp, session ID, and file path. Auto-rotates at 500 lines. Auto-adds AI workspace artifacts (project-map.md, session-log.md, state.md, known-issues.md) to `.gitignore` on first write.
+- **track-session-stats.js** — PostToolUse(Skill) hook tracking skill invocation counts with 2-hour auto-expiry for session boundary detection.
+- **stop-reminders.js** — Stop hook firing once per session (2-minute guard file TTL). Checks: TDD hygiene (source edits without test changes), uncommitted changes (≥5 files), state.md staleness (edits after state.md was written), session-log entry size (warns when entries exceed token budget), and decision log reminders (when core skill/hook/config files were modified).
+
+### Skill Activator
+
+- **skill-activator.js** — UserPromptSubmit hook analyzing every user prompt against 22 skill rules (keyword + intent pattern matching with confidence thresholds). Skips micro-tasks (≤8 words, specific patterns). Injects skill activation hints with priority ranking AND surfaces relevant past decisions from session-log.md and known-issues.md.
+- **skill-rules.json** — 22 rules covering all 25 skills with keywords, regex intent patterns, and priority tiers (critical/high/medium/low).
+
+### Hook Architecture
+
+hooks.json expanded from 1 hook event type to 5:
+
+| Event | Hooks | Purpose |
+|---|---|---|
+| SessionStart | session-start, context-engine (async) | Bootstrap context + auto-generate context snapshot |
+| PreToolUse | block-dangerous-commands (Bash), protect-secrets (Read\|Edit\|Write\|Bash), bash-compress-hook (Bash) | Safety + token efficiency before tool execution |
+| PostToolUse | track-edits (Edit\|Write), track-session-stats (Skill) | Session tracking after tool execution |
+| UserPromptSubmit | skill-activator | Skill routing + memory recall before model processing |
+| Stop | stop-reminders | Contextual reminders (TDD, commits, decision log) after model response |
+
+All hooks fail-open — return `{}` on any error, degrade gracefully on non-Claude harnesses.
+
+### Integration Principles Preserved
+
+- **Zero original code removed** — all plus features intact (parallel brainstorming, batched clarifying questions, server hardening, surgical changes rule, test orchestration, 9+ harness support)
+- **All hooks fail-open** — graceful degradation on unsupported harnesses
+- **All skill names use bare convention** — consistent with plus's existing namespace pattern
+- **All memory injections backward-compatible** — silent no-ops when files don't exist
+
 ## v6.0.4 (2026-06-28)
 
 Fork rebrand + tooling-focused patch release. Plugin name is now `superpowers-plus`, ownership moved to Thomas/Jianfeng at [github.com/chankh70/superpowers-plus](https://github.com/chankh70/superpowers-plus), and the rest of the fork's incremental work lands grouped below.
