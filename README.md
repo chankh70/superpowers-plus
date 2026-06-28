@@ -66,7 +66,7 @@ The Superpowers marketplace provides Superpowers and some other related plugins 
 - Install the plugin from this marketplace:
 
   ```bash
-  /plugin install superpowers-plus@chankh70/superpowers-plus
+  /plugin install superpowers-plus@superpowers-plus
   ```
 
 ### Antigravity
