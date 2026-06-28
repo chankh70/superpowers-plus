@@ -1,6 +1,6 @@
 # Superpowers (Fork)
 
-> **Fork** of [obra/superpowers](https://github.com/obra/superpowers) — the original project by [Jesse Vincent](https://blog.fsck.com) and the team at [Prime Radiant](https://primeradiant.com). This fork maintains the core skills library with a leaner bootstrap and harness-specific paring.
+> **Fork** of [obra/superpowers](https://github.com/obra/superpowers) — the original project by [Jesse Vincent](https://blog.fsck.com) and the team at [Prime Radiant](https://primeradiant.com). This fork extends the core skills library with cross-session memory, safety hooks, token compression, and 11 additional skills integrated from the superpowers-optimized fork project.
 
 Superpowers is a complete software development methodology for your coding agents, built on top of a set of composable skills and some initial instructions that make sure your agent uses them.
 
@@ -17,9 +17,10 @@ This fork trims what's no longer needed and adds improvements to core skills:
 
 ## What's Integrated from superpowers-optimized (v6.1.0)
 
-This release merges the best components from the [superpowers-optimized](https://github.com/obra/superpowers-optimized) fork:
+This release merges the best components from the [superpowers-optimized](https://github.com/REPOZY/superpowers-optimized) fork:
 
 ### New Skills (+11)
+
 - **token-efficiency** — Always-on baseline: parallel dispatch, exploration tracking, concise responses
 - **context-management** — Cross-session state (project-map.md, state.md, session-log.md) — never re-explore
 - **error-recovery** — known-issues.md error→solution map — fix recurring bugs in one step
@@ -33,24 +34,29 @@ This release merges the best components from the [superpowers-optimized](https:/
 - **claude-md-creator** — Minimal high-signal CLAUDE.md/AGENTS.md generation
 
 ### Enhanced Skills (+4)
+
 - **using-superpowers** — 3-tier classification (micro/light/full), EnterPlanMode intercept, routing guide for all 25 skills
 - **systematic-debugging** — Phase 0 (check known-issues), Self-Consistency Gate, post-fix KB updates
 - **verification-before-completion** — Stub scan, config change verification, self-consistency evidence evaluation
 - **test-driven-development** — Test infrastructure check, rationalization table, advanced test strategy
 
 ### Safety Hooks
+
 - **Block dangerous commands** — 26 destructive patterns (rm -rf /, force push to main, fork bombs, etc.)
 - **Protect secrets** — 50+ file patterns + 14 hardcoded secret detection patterns
 
 ### Bash Smart-Compress
+
 - ~76% token savings on noisy commands (git status, npm install, passing tests)
 - Opt-out: `SP_NO_COMPRESS=1`
 
 ### Tracking & Reminders
+
 - Edit tracking, session stats, TDD/commit/state.md staleness reminders
 - Opt-out: `SP_DISABLE_REMINDERS=1`
 
 ### Skill Activator
+
 - Automatic skill routing via keyword + intent pattern matching (22 rules)
 - Surfaces relevant session-log and known-issues entries mid-conversation
 
@@ -62,7 +68,9 @@ Give your agent Superpowers: [Claude Code](#claude-code), [Antigravity](#antigra
 
 ## How it works
 
-It starts from the moment you fire up your coding agent. As soon as it sees that you're building something, it _doesn't_ just jump into trying to write code. Instead, it steps back and asks you what you're really trying to do.
+It starts from the moment you fire up your coding agent. As soon as it sees that you're building something, it _doesn't_ just jump into trying to write code. Instead, it classifies your task (micro, lightweight, or full) and, for non-trivial work, validates the premise before designing anything.
+
+It remembers context across sessions — project structure, past decisions, known issues — so you never re-explore or re-debug work you've already done. Safety hooks silently block dangerous commands and protect secrets.
 
 Once it's teased a spec out of the conversation, it shows it to you in chunks short enough to actually read and digest.
 
@@ -285,13 +293,16 @@ For full tasks, the pipeline runs:
 ### Skills Library (25 total)
 
 **Testing**
+
 - **test-driven-development** — RED-GREEN-REFACTOR cycle with advanced test strategy and rationalization table
 
 **Debugging**
+
 - **systematic-debugging** — 5-phase root cause process with Self-Consistency Gate and known-issues integration
 - **verification-before-completion** — Stub scan, config change verification, self-consistency evidence evaluation
 
 **Collaboration**
+
 - **brainstorming** — Socratic design refinement with parallel subagent exploration
 - **writing-plans** — Incremental plan-writing with Problem Statement, User Stories, and Global Constraints
 - **executing-plans** — Task execution with surgical-changes-only rule
@@ -303,23 +314,27 @@ For full tasks, the pipeline runs:
 - **subagent-driven-development** — Fast iteration with two-stage review
 
 **Memory & Efficiency**
+
 - **token-efficiency** — Always-on baseline: parallel dispatch, exploration tracking, concise responses
 - **context-management** — Cross-session state (project-map.md, state.md, session-log.md)
 - **error-recovery** — known-issues.md error→solution map
 - **self-consistency-reasoner** — Internal multi-path reasoning gate (not user-invocable)
 
 **Specialized Workflows**
+
 - **refactoring** — Behavior-locked structural changes with characterization test safety net
 - **dependency-management** — Incremental updates with CVE handling and impact assessment
 - **performance-investigation** — Measure-first profiling (Baseline → Profile → Hypothesize → Fix → Re-measure)
 - **frontend-design** — Production-grade UI with 25 styles, 30 industry categories, WCAG AA compliance
 
 **Design & Decision**
+
 - **premise-check** — "Should this exist?" gate before any design or plan
 - **deliberation** — Stakeholder-perspective decision framing before brainstorming
 - **claude-md-creator** — Minimal high-signal CLAUDE.md/AGENTS.md generation
 
 **Meta**
+
 - **writing-skills** — Create new skills following best practices
 - **using-superpowers** — Entry point with 3-tier classification, routing guide for all 25 skills
 
@@ -365,7 +380,7 @@ Because skills and plugins don't provide any feedback to creators, we have no id
 
 This fork is maintained by **Thomas/Jianfeng** ([@chankh70](https://github.com/chankh70)).
 
-Superpowers was created by [Jesse Vincent](https://blog.fsck.com) and the team at [Prime Radiant](https://primeradiant.com). This fork's curated differences from upstream (parallel brainstorming, batched clarifying questions, server hardening, plan-writing cadence, surgical-changes rule, test orchestration) are described above; for everything else the upstream project retains copyright and attribution under the MIT license.
+Superpowers was created by [Jesse Vincent](https://blog.fsck.com) and the team at [Prime Radiant](https://primeradiant.com). This fork's additions (parallel brainstorming, batched clarifying questions, server hardening, plan-writing cadence, surgical-changes rule, test orchestration) and integrations from superpowers-optimized (cross-session memory, safety hooks, bash compression, 11 additional skills) are described above; for everything else the upstream project retains copyright and attribution under the MIT license.
 
 - **Discord**: [Join us](https://discord.gg/35wsABTejz) — the project shares one community space with upstream obra/superpowers
 - **Issues against this fork**: [github.com/chankh70/superpowers-plus/issues](https://github.com/chankh70/superpowers-plus/issues)
