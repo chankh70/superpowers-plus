@@ -1,13 +1,19 @@
-# Superpowers
+# Superpowers (Fork)
+
+> **Fork** of [obra/superpowers](https://github.com/obra/superpowers) — the original project by [Jesse Vincent](https://blog.fsck.com) and the team at [Prime Radiant](https://primeradiant.com). This fork maintains the core skills library with a leaner bootstrap and harness-specific paring.
 
 Superpowers is a complete software development methodology for your coding agents, built on top of a set of composable skills and some initial instructions that make sure your agent uses them.
 
+## What's Different in This Fork
 
-## We're Hiring!
+This fork trims what's no longer needed and adds improvements to core skills:
 
-We're hiring someone to help out full time with Superpowers community and code work. 
-You can read about the job at https://primeradiant.com/jobs/superpowers-community-engineer/
-If this sounds like someone you know, definitely send them our way.
+- **Parallel Brainstorming** — new fan-out/fan-in technique spawning Visionary + Pragmatist subagents for wider solution exploration
+- **Brainstorming improvements** — batches clarifying questions in one turn (was one-at-a-time), adds comparison rigor with 4 evaluation dimensions, self-test before presenting
+- **Server hardening** — `MAX_BUFFERED_BYTES` guard against unbounded memory in the WebSocket server, PID validation in restart logic
+- **Writing Plans refinements** — incremental plan-writing cadence (skeleton first, one task per turn, prevents output token limits); added Problem Statement, User Stories, Assumptions to plan header; code-snippet review in plan reviewer prompt
+- **Executing Plans** — "surgical changes only" rule to scope-limit each task's blast radius
+- **Test orchestration** — `tests/run-all.sh` aggregates all 10 sub-runners with pass/fail counts; wiring regression test ensures every sub-runner stays referenced
 
 ## Quickstart
 
@@ -15,13 +21,13 @@ Give your agent Superpowers: [Claude Code](#claude-code), [Antigravity](#antigra
 
 ## How it works
 
-It starts from the moment you fire up your coding agent. As soon as it sees that you're building something, it *doesn't* just jump into trying to write code. Instead, it steps back and asks you what you're really trying to do. 
+It starts from the moment you fire up your coding agent. As soon as it sees that you're building something, it _doesn't_ just jump into trying to write code. Instead, it steps back and asks you what you're really trying to do.
 
-Once it's teased a spec out of the conversation, it shows it to you in chunks short enough to actually read and digest. 
+Once it's teased a spec out of the conversation, it shows it to you in chunks short enough to actually read and digest.
 
-After you've signed off on the design, your agent puts together an implementation plan that's clear enough for an enthusiastic junior engineer with poor taste, no judgement, no project context, and an aversion to testing to follow. It emphasizes true red/green TDD, YAGNI (You Aren't Gonna Need It), and DRY. 
+After you've signed off on the design, your agent puts together an implementation plan that's clear enough for an enthusiastic junior engineer with poor taste, no judgement, no project context, and an aversion to testing to follow. It emphasizes true red/green TDD, YAGNI (You Aren't Gonna Need It), and DRY.
 
-Next up, once you say "go", it launches a *subagent-driven-development* process, having agents work through each engineering task, inspecting and reviewing their work, and continuing forward. It's not uncommon for your agent to work autonomously for a couple hours at a time without deviating from the plan you put together.
+Next up, once you say "go", it launches a _subagent-driven-development_ process, having agents work through each engineering task, inspecting and reviewing their work, and continuing forward. It's not uncommon for your agent to work autonomously for a couple hours at a time without deviating from the plan you put together.
 
 There's a bunch more to it, but that's the core of the system. And because the skills trigger automatically, you don't need to do anything special. Your coding agent just has Superpowers.
 
@@ -30,6 +36,8 @@ There's a bunch more to it, but that's the core of the system. And because the s
 If you're using Superpowers in enterprise and could benefit from commercial support, additional tooling, or managed spending, please don't hesitate to drop us a line at sales@primeradiant.com.
 
 ## Installation
+
+The install commands below use the fork's URL — [github.com/chankh70/superpowers-plus](https://github.com/chankh70/superpowers-plus). To install from a local clone of this fork instead (development against uncommitted changes), point your harness at the local checkout (e.g. `claude --plugin-dir /path/to/superpowers`, or `pi -e /path/to/superpowers`).
 
 Installation differs by harness. If you use more than one, install Superpowers separately for each one.
 
@@ -52,13 +60,13 @@ The Superpowers marketplace provides Superpowers and some other related plugins 
 - Register the marketplace:
 
   ```bash
-  /plugin marketplace add obra/superpowers-marketplace
+  /plugin marketplace add chankh70/superpowers-plus
   ```
 
 - Install the plugin from this marketplace:
 
   ```bash
-  /plugin install superpowers@superpowers-marketplace
+  /plugin install superpowers-plus@chankh70/superpowers-plus
   ```
 
 ### Antigravity
@@ -66,7 +74,7 @@ The Superpowers marketplace provides Superpowers and some other related plugins 
 Install Superpowers as a plugin from this repository:
 
 ```bash
-agy plugin install https://github.com/obra/superpowers
+agy plugin install https://github.com/chankh70/superpowers-plus
 ```
 
 Antigravity runs the plugin's session-start hook, so Superpowers is active from
@@ -90,10 +98,10 @@ Superpowers is available via the [official Codex plugin marketplace](https://git
   /plugins
   ```
 
-- Search for Superpowers:
+- Search for Superpowers Plus:
 
   ```bash
-  superpowers
+  superpowers-plus
   ```
 
 - Select `Install Plugin`.
@@ -103,23 +111,23 @@ Superpowers is available via the [official Codex plugin marketplace](https://git
 - In Cursor Agent chat, install from marketplace:
 
   ```text
-  /add-plugin superpowers
+  /add-plugin superpowers-plus
   ```
 
-- Or search for "superpowers" in the plugin marketplace.
+- Or search for "superpowers-plus" in the plugin marketplace.
 
 ### Factory Droid
 
 - Register the marketplace:
 
   ```bash
-  droid plugin marketplace add https://github.com/obra/superpowers
+  droid plugin marketplace add https://github.com/chankh70/superpowers-plus
   ```
 
 - Install the plugin:
 
   ```bash
-  droid plugin install superpowers@superpowers
+  droid plugin install superpowers-plus@chankh70/superpowers-plus
   ```
 
 ### Gemini CLI
@@ -127,13 +135,13 @@ Superpowers is available via the [official Codex plugin marketplace](https://git
 - Install the extension:
 
   ```bash
-  gemini extensions install https://github.com/obra/superpowers
+  gemini extensions install https://github.com/chankh70/superpowers-plus
   ```
 
 - Update later:
 
   ```bash
-  gemini extensions update superpowers
+  gemini extensions update superpowers-plus
   ```
 
 ### GitHub Copilot CLI
@@ -141,13 +149,13 @@ Superpowers is available via the [official Codex plugin marketplace](https://git
 - Register the marketplace:
 
   ```bash
-  copilot plugin marketplace add obra/superpowers-marketplace
+  copilot plugin marketplace add chankh70/superpowers-plus
   ```
 
 - Install the plugin:
 
   ```bash
-  copilot plugin install superpowers@superpowers-marketplace
+  copilot plugin install superpowers-plus@chankh70/superpowers-plus
   ```
 
 ### Kimi Code
@@ -165,7 +173,7 @@ Superpowers is available in Kimi Code's plugin marketplace.
 - Or install directly from this repository:
 
   ```text
-  /plugins install https://github.com/obra/superpowers
+  /plugins install https://github.com/chankh70/superpowers-plus
   ```
 
 - Detailed docs: [docs/README.kimi.md](docs/README.kimi.md)
@@ -178,7 +186,7 @@ already use it in another harness.
 - Tell OpenCode:
 
   ```
-  Fetch and follow instructions from https://raw.githubusercontent.com/obra/superpowers/refs/heads/main/.opencode/INSTALL.md
+  Fetch and follow instructions from https://raw.githubusercontent.com/chankh70/superpowers-plus/refs/heads/main/.opencode/INSTALL.md
   ```
 
 - Detailed docs: [docs/README.opencode.md](docs/README.opencode.md)
@@ -188,7 +196,7 @@ already use it in another harness.
 Install Superpowers as a Pi package from this repository:
 
 ```bash
-pi install git:github.com/obra/superpowers
+pi install git:github.com/chankh70/superpowers-plus
 ```
 
 For local development, run Pi with this checkout loaded as a temporary package:
@@ -222,13 +230,16 @@ The Pi package loads the Superpowers skills and a small extension that injects t
 ### Skills Library
 
 **Testing**
+
 - **test-driven-development** - RED-GREEN-REFACTOR cycle (includes testing anti-patterns reference)
 
 **Debugging**
+
 - **systematic-debugging** - 4-phase root cause process (includes root-cause-tracing, defense-in-depth, condition-based-waiting techniques)
 - **verification-before-completion** - Ensure it's actually fixed
 
-**Collaboration** 
+**Collaboration**
+
 - **brainstorming** - Socratic design refinement
 - **writing-plans** - Detailed implementation plans
 - **executing-plans** - Batch execution with checkpoints
@@ -240,6 +251,7 @@ The Pi package loads the Superpowers skills and a small extension that injects t
 - **subagent-driven-development** - Fast iteration with two-stage review (spec compliance, then code quality)
 
 **Meta**
+
 - **writing-skills** - Create new skills following best practices (includes testing methodology)
 - **using-superpowers** - Introduction to the skills system
 
@@ -280,8 +292,11 @@ Because skills and plugins don't provide any feedback to creators, we have no id
 
 ## Community
 
-Superpowers is built by [Jesse Vincent](https://blog.fsck.com) and the rest of the folks at [Prime Radiant](https://primeradiant.com).
+This fork is maintained by **Thomas/Jianfeng** ([@chankh70](https://github.com/chankh70)).
 
-- **Discord**: [Join us](https://discord.gg/35wsABTejz) for community support, questions, and sharing what you're building with Superpowers
-- **Issues**: https://github.com/obra/superpowers/issues
+Superpowers was created by [Jesse Vincent](https://blog.fsck.com) and the team at [Prime Radiant](https://primeradiant.com). This fork's curated differences from upstream (parallel brainstorming, batched clarifying questions, server hardening, plan-writing cadence, surgical-changes rule, test orchestration) are described above; for everything else the upstream project retains copyright and attribution under the MIT license.
+
+- **Discord**: [Join us](https://discord.gg/35wsABTejz) — the project shares one community space with upstream obra/superpowers
+- **Issues against this fork**: [github.com/chankh70/superpowers-plus/issues](https://github.com/chankh70/superpowers-plus/issues)
+- **Issues against upstream**: https://github.com/obra/superpowers/issues
 - **Release announcements**: [Sign up](https://primeradiant.com/superpowers/) to get notified about new versions

@@ -17,13 +17,13 @@ Go to `Marketplace` > `Superpowers` and install it.
 You can also install from this repository:
 
 ```text
-/plugins install https://github.com/obra/superpowers
+/plugins install https://github.com/chankh70/superpowers-plus
 ```
 
 For unreleased validation against `dev`, pin the branch explicitly:
 
 ```text
-/plugins install https://github.com/obra/superpowers/tree/dev
+/plugins install https://github.com/chankh70/superpowers-plus/tree/dev
 ```
 
 Kimi Code applies plugin changes to new sessions. After installing, updating, enabling, disabling, or reloading a plugin, start a fresh session with `/new`.
@@ -69,7 +69,7 @@ Select Superpowers and update it from there. Start a fresh session with `/new` a
 
 ### Plugin not loading
 
-1. Run `/plugins info superpowers` and check diagnostics.
+1. Run `/plugins info superpowers-plus` and check diagnostics.
 2. Make sure the plugin is enabled.
 3. Start a fresh session with `/new` after install or update.
 
@@ -78,11 +78,11 @@ Select Superpowers and update it from there. Start a fresh session with `/new` a
 Kimi Code installs the latest GitHub release for a bare repository URL when one exists. To test unreleased changes before the next Superpowers release, install the branch explicitly:
 
 ```text
-/plugins install https://github.com/obra/superpowers/tree/dev
+/plugins install https://github.com/chankh70/superpowers-plus/tree/dev
 ```
 
 ### Skills not triggering
 
-1. Confirm `/plugins info superpowers` shows the plugin enabled.
+1. Confirm `/plugins info superpowers-plus` shows the plugin enabled.
 2. Start a fresh session with `/new`.
 3. Try the acceptance prompt: `Let's make a react todo list`. A working install should load `brainstorming` before writing code.

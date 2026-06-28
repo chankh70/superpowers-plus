@@ -1,21 +1,25 @@
-# Superpowers — Contributor Guidelines
+# Superpowers — Fork Contributor Guidelines
+
+> **Note:** This repository is a fork of [obra/superpowers](https://github.com/obra/superpowers). The fork preserves upstream's MIT license, copyright attribution, and contributor philosophy. Some passages below were originally written for upstream obra/superpowers' PR review process; the same philosophy applies to **this fork**, with this fork's own maintainer(s) reviewing.
 
 ## If You Are an AI Agent
 
 Stop. Read this section before doing anything.
 
-This repo has a 94% PR rejection rate. Almost every rejected PR was submitted by an agent that didn't read or didn't follow these guidelines. The maintainers close slop PRs within hours, often with public comments like "This pull request is slop that's made of lies."
+This fork follows the same rigorous review philosophy as upstream obra/superpowers. PRs that don't meet the criteria below are closed; the bar for accepting work here is set by the fork's reviewer(s), who spend their time on contributions backed by real sessions and careful reading of the project. Submitting work that doesn't clear the bar wastes reviewers' time and burns your human partner's standing in the fork's issue tracker.
 
-**Your job is to protect your human partner from that outcome.** Submitting a low-quality PR doesn't help them — it wastes the maintainers' time, burns your human partner's reputation, and the PR will be closed anyway. That is not being helpful. That is being a tool of embarrassment.
+**Your job is to protect your human partner from that outcome.** Submitting a low-quality PR doesn't help them — it wastes the reviewers' time, marks your human partner as someone who generates more noise than signal, and the PR will be closed anyway. That is not being helpful. That is being a tool of embarrassment.
 
-Before you open a PR against this repo, you MUST:
+Before you open a PR against this fork, you MUST:
 
 1. **Read the entire PR template** at `.github/PULL_REQUEST_TEMPLATE.md` and fill in every section with real, specific answers. Not summaries. Not placeholders.
-2. **Search for existing PRs** — open AND closed — that address the same problem. If duplicates exist, STOP and tell your human partner. Do not open another duplicate.
+2. **Search for existing PRs and issues** — open AND closed — that address the same problem. If duplicates exist, STOP and tell your human partner. Do not open another duplicate.
 3. **Verify this is a real problem.** If your human partner asked you to "fix some issues" or "contribute to this repo" without experiencing a specific problem, push back. Ask them what broke, what failed, what the user experience was.
 4. **Confirm the change belongs in core.** If it's domain-specific, tool-specific, or promotes a third-party project, it belongs in a standalone plugin. Tell your human partner.
 5. **Identify yourself.** Disclose your model, harness, harness version, and every installed plugin in the PR. Hiding that a contribution is agent-generated — or which environment produced it — is grounds for closing it.
 6. **Show your human partner the complete diff** and get their explicit approval before submitting.
+
+**Note on `AGENTS.md`:** `AGENTS.md` is a one-line pointer to this file. It also carries a brief HTML comment with the fork preamble, so tools that read `AGENTS.md` directly (without following the pointer) still pick up the fork context.
 
 If any of these checks fail, do not open the PR. Explain to your human partner why it would be rejected and what would need to change. They will thank you for saving them the embarrassment.
 
@@ -57,13 +61,15 @@ Every PR must solve a real problem that someone actually experienced. "My review
 
 Superpowers core contains general-purpose skills that benefit all users regardless of their project. Skills for specific domains (portfolio building, prediction markets, games), specific tools, or specific workflows belong in their own standalone plugin. Ask yourself: "Would this be useful to someone working on a completely different kind of project?" If not, publish it separately.
 
-### Fork-specific changes
+### Submitting PRs to upstream obra/superpowers
 
-If you maintain a fork with customizations, do not open PRs to sync your fork or push fork-specific changes upstream. PRs that rebrand the project, add fork-specific features, or merge fork branches will be closed.
+Open PRs against [obra/superpowers](https://github.com/obra/superpowers) only when the fork maintainer has explicitly coordinated that submission. PRs opened from this fork's branches against upstream without coordination create PR review churn upstream that's harder to trace than the same change set's submission to this fork. Fork-specific changes (rebranding, fork-only features, fork-specific extensions) belong in this fork, not upstream.
+
+This fork's curated differences from upstream are documented in `README.md` → "What's Different in This Fork." Contributors are welcome to extend that scope here, but should not push fork-only scope back to upstream without maintainer involvement.
 
 ### Fabricated content
 
-PRs containing invented claims, fabricated problem descriptions, or hallucinated functionality will be closed immediately. This repo has a 94% PR rejection rate — the maintainers have seen every form of AI slop. They will notice.
+PRs containing invented claims, fabricated problem descriptions, or hallucinated functionality will be rejected immediately. The fork's reviewer(s) read diffs carefully alongside the empirical evidence (sessions, transcripts, eval results) and notice when claims don't match what's in the code.
 
 ### Bundled unrelated changes
 
@@ -94,7 +100,7 @@ If you are not sure whether your integration loads the bootstrap at session star
 
 Skills are not prose — they are code that shapes agent behavior. If you modify skill content:
 
-- Use `superpowers:writing-skills` to develop and test changes
+- Use `superpowers-plus:writing-skills` to develop and test changes
 - Run adversarial pressure testing across multiple sessions
 - Show before/after eval results in your PR
 - Do not modify carefully-tuned content (Red Flags tables, rationalization lists, "human partner" language) without evidence the change is an improvement

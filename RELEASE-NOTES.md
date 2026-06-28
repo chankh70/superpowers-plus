@@ -1,5 +1,38 @@
 # Superpowers Release Notes
 
+> **Note:** This file is inherited from upstream [obra/superpowers](https://github.com/obra/superpowers/releases) (MIT-licensed). The fork's own changes are documented in this fork's git log and tags; only changes that mirror an upstream release appear here.
+
+## v6.0.4 (2026-06-28)
+
+Fork rebrand + tooling-focused patch release. Plugin name is now `superpowers-plus`, ownership moved to Thomas/Jianfeng at [github.com/chankh70/superpowers-plus](https://github.com/chankh70/superpowers-plus), and the rest of the fork's incremental work lands grouped below.
+
+### Fork Rebrand
+
+- **Plugin name is now `superpowers-plus`** across every harness manifest (Claude Code, Codex, Cursor, Kimi), the marketplace entry, the Gemini extension, the `pi` bootstrap marker, the OpenCode install docs, and the npm `package.json`. Skill invocations follow (`superpowers-plus:brainstorming`, etc.). See this fork's README for the full mapping and per-harness install commands.
+- **Contributor guidelines scoped to this fork.** CLAUDE.md / AGENTS.md and the PR + bug-report templates were rewritten to describe the fork's review philosophy rather than naming the upstream maintainer. Upstream-targeted PRs are treated as an explicit, fork-maintainer-coordinated action.
+
+### Brainstorming
+
+- **Parallel Brainstorming** — new `skills/brainstorming/parallel-brainstorming.md` runs a fan-out / fan-in pass that spawns Visionary and Pragmatist subagents in parallel to widen solution exploration before settling on a design.
+- **Batched clarifying questions** — the brainstorming skill now asks all initial clarification questions in one turn rather than one at a time, cutting round-trips on the early phase.
+- **Comparison rigor** — options are now weighed on four explicit dimensions (fit, cost, risk, reversibility), and a self-test step runs before the design is presented back.
+- **Server hardening** — `MAX_BUFFERED_BYTES` cap on the WebSocket server's outbound buffer prevents unbounded memory growth on disconnected clients, and `start-server.sh` now validates the recorded PID (must be a live `node` with the right command line) before signalling it on restart.
+
+### Writing Plans
+
+- **Incremental plan-writing cadence** — the skill writes a skeleton first and one task per subsequent turn, riding under output-token limits instead of hitting them.
+- **Plan header carries Problem Statement, User Stories, and Assumptions** alongside the existing Global Constraints, so reviewers don't have to re-derive them.
+- **Plan reviewer reads code snippets** — the reviewer greps the codebase to anchor comments in real `file:line` references rather than naming files abstractly.
+
+### Executing Plans
+
+- **Surgical changes only** — per-task scope is explicitly capped. An executor reports back rather than touching adjacent files, even when those files look obviously worth tidying. Reduces blast radius when a review re-proves a task and keeps each handoff clean for the next.
+
+### Test Orchestration
+
+- **Aggregated runner** — new `tests/run-all.sh` invokes every harness sub-runner in sequence and prints a pass/fail total, matching the per-harness entries in `package.json`'s `scripts` block.
+- **Wiring regression test** — `tests/run-all.test.sh` greps `package.json` against `run-all.sh` so dropping or renaming a sub-runner fails CI rather than silently disappearing from the aggregate.
+
 ## v6.0.3 (2026-06-18)
 
 ### Subagent-Driven Development

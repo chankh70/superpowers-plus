@@ -1,5 +1,7 @@
 # Porting Superpowers to a New Harness
 
+> **Note for fork maintainers:** This guide was originally written for upstream [obra/superpowers](https://github.com/obra/superpowers). The integration mechanics, hard requirements, and reference layouts apply identically to this fork. Adjust your fork's installer metadata (`homepage`/`repository` fields in `.<harness>-plugin/plugin.json`) to point at the fork's own repo when you publish one; the integration code itself does not change.
+
 This guide explains how to add support for a new harness — an IDE, CLI, or
 agent runner that isn't Claude Code — so that Superpowers skills auto-trigger
 there the same way they do natively.

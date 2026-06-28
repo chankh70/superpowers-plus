@@ -141,10 +141,48 @@ fi
 printf '%s\n' "$SERVER_ID" > "$SERVER_ID_FILE"
 chmod 600 "$SERVER_ID_FILE" 2>/dev/null || true
 
+read_expected_server_id() {
+  [[ -f "$SERVER_ID_FILE" ]] || return 1
+  local id
+  id="$(tr -d '\r\n' < "$SERVER_ID_FILE" 2>/dev/null || true)"
+  [[ "$id" =~ ^[A-Za-z0-9_-]{32,64}$ ]] || return 1
+  printf '%s\n' "$id"
+}
+
+command_has_server_id() {
+  local pid="$1"
+  local expected="$2"
+  local expected_arg="--brainstorm-server-id=$expected"
+  if [[ -r "/proc/$pid/cmdline" ]]; then
+    local arg
+    while IFS= read -r -d '' arg || [[ -n "$arg" ]]; do
+      [[ "$arg" == "$expected_arg" ]] && return 0
+    done < "/proc/$pid/cmdline"
+    return 1
+  fi
+  local command_line
+  command_line="$(ps -ww -p "$pid" -o command= 2>/dev/null || ps -f -p "$pid" 2>/dev/null | sed '1d' || true)"
+  [[ -n "$command_line" ]] || return 1
+  case " $command_line " in
+    *" $expected_arg "*) return 0 ;;
+    *) return 1 ;;
+  esac
+}
+
+is_brainstorm_server() {
+  kill -0 "$1" 2>/dev/null || return 1
+  local expected_id
+  expected_id="$(read_expected_server_id)" || return 1
+  command_has_server_id "$1" "$expected_id" || return 1
+  return 0
+}
+
 # Kill any existing server
 if [[ -f "$PID_FILE" ]]; then
   old_pid=$(cat "$PID_FILE")
-  kill "$old_pid" 2>/dev/null
+  if is_brainstorm_server "$old_pid"; then
+    kill "$old_pid" 2>/dev/null
+  fi
   rm -f "$PID_FILE"
 fi
 

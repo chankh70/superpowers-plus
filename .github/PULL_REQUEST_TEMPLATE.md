@@ -1,12 +1,22 @@
 <!--
 BEFORE SUBMITTING: Read every word of this template. PRs that leave
 sections blank, contain multiple unrelated changes, or show no evidence
-of human involvement will be closed without review.
+of human involvement will be rejected without review.
+
+This repository is a fork of obra/superpowers. The fork's reviewer(s)
+apply the contributor philosophy described in CLAUDE.md. Some
+upstream-targeted guidance has been softened; requirements around
+scope, evidence, and human review remain the same.
 -->
 
 > **This PR MUST target the `dev` branch, not `main`.** `main` is the
 > released branch; active work lands on `dev` first. PRs opened against
 > `main` will be asked to retarget `dev` before review.
+>
+> **Do not open PRs against upstream obra/superpowers from this fork's
+> branches without coordination with the fork maintainer.** Fork-only
+> features belong in this fork; pushing them back to upstream is the
+> maintainer's call.
 
 ## Who is submitting this PR? (required)
 <!-- Required. PRs that omit this will be closed. We assume an agent wrote
@@ -117,7 +127,7 @@ paste the complete transcript here
 
 ## Rigor
 
-- [ ] If this is a skills change: I used `superpowers:writing-skills` and
+- [ ] If this is a skills change: I used `superpowers-plus:writing-skills` and
       completed adversarial pressure testing (paste results below)
 - [ ] This change was tested adversarially, not just on the happy path
 - [ ] I did not modify carefully-tuned content (Red Flags table,

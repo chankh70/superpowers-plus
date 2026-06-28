@@ -19,7 +19,27 @@ Live in `tests/`. Currently:
 - `tests/claude-code/test-worktree-native-preference.sh` — RED-GREEN-REFACTOR validation for worktree skill (drill covers the PRESSURE phase; bash also covers RED/GREEN baselines).
 - `tests/explicit-skill-requests/` — Haiku-specific, multi-turn, and skill-name-prompted tests not covered by drill.
 
-Run plugin tests via the relevant directory's `run-*.sh` or `npm test`.
+The test suite lives under `tests/`. The single canonical entry point is
+`npm test` from the repo root; it fans out to every sub-runner and exits
+non-zero on any failure. Run just one suite with `npm run test:<name>` —
+the names mirror the subdirectory names:
+
+| `npm run ...` | What it runs |
+|---|---|
+| `test` | all 10 sub-runners |
+| `test:brainstorm-server` | Node-based WebSocket, auth, lifecycle |
+| `test:codex-plugin-sync` | rsync exclusion regression for the Codex mirror |
+| `test:opencode` | OpenCode plugin loading (integration gated on `opencode` CLI) |
+| `test:claude-code` | Claude Code skill-recall probes (gated on Claude CLI) |
+| `test:hooks` | SessionStart hook shape across harnesses |
+| `test:shell-lint` | ShellCheck + shfmt smoke tests |
+| `test:explicit-skill-requests` | explicit skill-invocation tests |
+| `test:kimi` | Kimi manifest wiring (gated on Kimi CLI) |
+| `test:antigravity` | Antigravity tool mapping (gated on `agy` CLI) |
+| `test:pi` | Pi extension bootstrap-injection tests |
+
+Each runner also works standalone from its own subdirectory; `npm test` is
+just the convenience wrapper that removes the need to know the names.
 
 ## Skill behavior evals
 

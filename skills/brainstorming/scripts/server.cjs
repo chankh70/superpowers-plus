@@ -8,6 +8,11 @@ const path = require('path');
 const OPCODES = { TEXT: 0x01, CLOSE: 0x08, PING: 0x09, PONG: 0x0A };
 const WS_MAGIC = '258EAFA5-E914-47DA-95CA-C5AB0DC85B11';
 const MAX_FRAME_PAYLOAD_BYTES = 10 * 1024 * 1024;
+// Maximum total buffered data before we drop a misbehaving client.
+// A client that never sends a complete frame header (or claims an
+// enormous payload without delivering it) would otherwise cause
+// unbounded memory growth via Buffer.concat.
+const MAX_BUFFERED_BYTES = 11 * 1024 * 1024; // slightly over MAX_FRAME_PAYLOAD_BYTES to allow a full max frame + header
 
 function computeAcceptKey(clientKey) {
   return crypto.createHash('sha1').update(clientKey + WS_MAGIC).digest('base64');
@@ -248,7 +253,7 @@ function brandMarkup() {
     ? ''
     : '<img class="brand-logo" src="' + SUPERPOWERS_BRAND_IMAGE_URL + '?v=' + encodeURIComponent(SUPERPOWERS_VERSION) + '" alt="Prime Radiant" referrerpolicy="no-referrer" decoding="async">';
 
-  return '<div class="brand"><a href="https://github.com/obra/superpowers">' + logo + '<span class="brand-copy">' + text + '</span></a></div>';
+  return '<div class="brand"><a href="https://github.com/chankh70/superpowers-plus">' + logo + '<span class="brand-copy">' + text + '</span></a></div>';
 }
 
 function renderBranding(html) {
@@ -459,6 +464,11 @@ function handleUpgrade(req, socket) {
   clients.add(socket);
 
   socket.on('data', (chunk) => {
+    if (buffer.length + chunk.length > MAX_BUFFERED_BYTES) {
+      socket.destroy();
+      clients.delete(socket);
+      return;
+    }
     buffer = Buffer.concat([buffer, chunk]);
     while (buffer.length > 0) {
       let result;

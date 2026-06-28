@@ -8,7 +8,7 @@ Add superpowers to the `plugin` array in your `opencode.json` (global or project
 
 ```json
 {
-  "plugin": ["superpowers@git+https://github.com/obra/superpowers.git"]
+  "plugin": ["superpowers-plus@git+https://github.com/chankh70/superpowers-plus.git]"@git+https://github.com/chankh70/superpowers-plus.git"]
 }
 ```
 
@@ -91,7 +91,7 @@ To pin a specific version, use a branch or tag:
 
 ```json
 {
-  "plugin": ["superpowers@git+https://github.com/obra/superpowers.git#v5.0.3"]
+  "plugin": ["superpowers-plus@git+https://github.com/chankh70/superpowers-plus.git]"@git+https://github.com/chankh70/superpowers-plus.git#v5.0.3"]
 }
 ```
 
@@ -134,7 +134,7 @@ the plugin, try installing with system npm and pointing OpenCode at the local
 package:
 
 ```powershell
-npm install superpowers@git+https://github.com/obra/superpowers.git --prefix "$HOME\.config\opencode"
+npm install superpowers-plus@git+https://github.com/chankh70/superpowers-plus.git --prefix "$HOME\.config\opencode"
 ```
 
 Then use the installed package path in `opencode.json`:
@@ -144,8 +144,6 @@ Then use the installed package path in `opencode.json`:
   "plugin": ["~/.config/opencode/node_modules/superpowers"]
 }
 ```
-
-### Skills not found
 
 1. Use OpenCode's `skill` tool to list available skills
 2. Check that the plugin is loading (see above)
@@ -158,6 +156,6 @@ Then use the installed package path in `opencode.json`:
 
 ## Getting Help
 
-- Report issues: https://github.com/obra/superpowers/issues
-- Main documentation: https://github.com/obra/superpowers
+- Report issues: https://github.com/chankh70/superpowers-plus/issues
+- Main documentation: https://github.com/chankh70/superpowers-plus
 - OpenCode docs: https://opencode.ai/docs/

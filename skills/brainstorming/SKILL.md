@@ -7,7 +7,7 @@ description: "You MUST use this before any creative work - creating features, bu
 
 Help turn ideas into fully formed designs and specs through natural collaborative dialogue.
 
-Start by understanding the current project context, then ask questions one at a time to refine the idea. Once you understand what you're building, present the design and get user approval.
+Start by understanding the current project context, then ask clarifying questions to refine the idea. Once you understand what you're building, present the design and get user approval.
 
 <HARD-GATE>
 Do NOT invoke any implementation skill, write any code, scaffold any project, or take any implementation action until you have presented a design and the user has approved it. This applies to EVERY project regardless of perceived simplicity.
@@ -23,8 +23,8 @@ You MUST create a task for each of these items and complete them in order:
 
 1. **Explore project context** — check files, docs, recent commits
 2. **Offer the visual companion just-in-time** — NOT upfront. The first time a question would genuinely be clearer shown than described, offer it then (its own message); on approval its browser tab opens for you. If no visual question ever arises, never offer it. See the Visual Companion section below.
-3. **Ask clarifying questions** — one at a time, understand purpose/constraints/success criteria
-4. **Propose 2-3 approaches** — with trade-offs and your recommendation
+3. **Ask clarifying questions** — ask all clarifying questions together in a single turn. Use multiple-choice format where possible to reduce round trips.
+4. **Propose 2-3 approaches** — compare 2-3 options across what each assumes, where each breaks down, what would rule each out, and what evidence supports each; lead with a recommendation tied to the comparison, not to gut feel (replace with parallel brainstorming if the user asks — see `parallel-brainstorming.md`)
 5. **Present design** — in sections scaled to their complexity, get user approval after each section
 6. **Write design doc** — save to `docs/superpowers/specs/YYYY-MM-DD-<topic>-design.md` and commit
 7. **Spec self-review** — quick inline check for placeholders, contradictions, ambiguity, scope (see below)
@@ -67,16 +67,22 @@ digraph brainstorming {
 - Check out the current project state first (files, docs, recent commits)
 - Before asking detailed questions, assess scope: if the request describes multiple independent subsystems (e.g., "build a platform with chat, file storage, billing, and analytics"), flag this immediately. Don't spend questions refining details of a project that needs to be decomposed first.
 - If the project is too large for a single spec, help the user decompose into sub-projects: what are the independent pieces, how do they relate, what order should they be built? Then brainstorm the first sub-project through the normal design flow. Each sub-project gets its own spec → plan → implementation cycle.
-- For appropriately-scoped projects, ask questions one at a time to refine the idea
+- Ask all clarifying questions together in a single turn to reduce round trips
 - Prefer multiple choice questions when possible, but open-ended is fine too
-- Only one question per message - if a topic needs more exploration, break it into multiple questions
+- If a topic needs more exploration, include follow-ups in the same batch
 - Focus on understanding: purpose, constraints, success criteria
 
 **Exploring approaches:**
 
-- Propose 2-3 different approaches with trade-offs
-- Present options conversationally with your recommendation and reasoning
-- Lead with your recommended option and explain why
+- Propose 2-3 different approaches, then compare them with rigor. List trade-offs is not enough — your recommendation must be **tied to the comparison**, not to gut feel. For each option, address these four dimensions (skip one only when it genuinely doesn't apply — never to save effort):
+  - **What it assumes** — the hidden premises the option rests on. If an assumption turns out to be wrong, the option can collapse.
+  - **Where it breaks down** — the conditions under which it fails, degrades, or becomes painful. Name the actual failure modes.
+  - **What would rule it out** — the specific evidence, finding, or constraint that would make you abandon this option. Be concrete.
+  - **What evidence supports it** — what you currently know that makes this option plausible. Cite specifics, not vibes.
+- Compare options across those dimensions, then lead with your recommendation and explicitly tie it to the comparison.
+- **Self-test before presenting:** "If the user pressed deeper on the weakest dimension of my top choice, would my recommendation flip?" If yes, the comparison wasn't deep enough — that's the bug. Go back and fill the gap before presenting.
+- Present the comparison conversationally; you do not have to literally label each dimension, but each one should be evident in what you say.
+- For complex problems where you want to explore a wider solution space, the user may ask you to use parallel brainstorming — spawning 2 subagents with contrasting perspectives simultaneously, then synthesizing their outputs. See `parallel-brainstorming.md` for the full technique. The synthesis from parallel brainstorming must apply the same comparison rigor before recommending. Only use this when the user explicitly asks.
 
 **Presenting the design:**
 
@@ -121,7 +127,7 @@ Fix any issues inline. No need to re-review — just fix and move on.
 **User Review Gate:**
 After the spec review loop passes, ask the user to review the written spec before proceeding:
 
-> "Spec written and committed to `<path>`. Please review it and let me know if you want to make any changes before we start writing out the implementation plan."
+> "Spec written and saved to `<path>`. Please review it and let me know if you want to make any changes before we start writing out the implementation plan."
 
 Wait for the user's response. If they request changes, make them and re-run the spec review loop. Only proceed once the user approves.
 
@@ -132,7 +138,7 @@ Wait for the user's response. If they request changes, make them and re-run the 
 
 ## Key Principles
 
-- **One question at a time** - Don't overwhelm with multiple questions
+- **Batch clarifying questions** - Ask all clarifying questions in one turn to reduce round trips. Use multiple choice where possible.
 - **Multiple choice preferred** - Easier to answer than open-ended when possible
 - **YAGNI ruthlessly** - Remove unnecessary features from all designs
 - **Explore alternatives** - Always propose 2-3 approaches before settling
@@ -143,7 +149,8 @@ Wait for the user's response. If they request changes, make them and re-run the 
 
 A browser-based companion for showing mockups, diagrams, and visual options during brainstorming. Available as a tool — not a mode. Accepting the companion means it's available for questions that benefit from visual treatment; it does NOT mean every question goes through the browser.
 
-**Offering the companion (just-in-time):** Do NOT offer it upfront. Wait until a question would genuinely be clearer shown than told — a real mockup / layout / diagram question, not merely a UI *topic*. The first time that happens, offer it then, as its own message:
+**Offering the companion (just-in-time):** Do NOT offer it upfront. Wait until a question would genuinely be clearer shown than told — a real mockup / layout / diagram question, not merely a UI _topic_. The first time that happens, offer it then, as its own message:
+
 > "This next part might be easier if I show you — I can put together mockups, diagrams, and comparisons in a browser tab as we go. It's still new and can be token-intensive. Want me to? I'll open it for you."
 
 **This offer MUST be its own message.** Only the offer — no clarifying question, summary, or other content. Wait for the user's response. If they accept, start the server with `--open` so their browser opens to the first screen automatically. If they decline, continue text-only and don't offer again unless they raise it.

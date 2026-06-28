@@ -9,6 +9,11 @@
 # pushes a sync branch, and opens a PR.
 # Path/user agnostic — auto-detects upstream from script location.
 #
+# NOTE FOR FORK MAINTAINERS: This script was written for upstream's
+# prime-radiant-inc/openai-codex-plugins sync. If this repository is a fork of
+# obra/superpowers and you maintain a separate Codex marketplace mirror, edit
+# the FORK= line below to point at your mirror before running.
+#
 # Deterministic: running twice against the same upstream SHA produces PRs with
 # identical diffs, so two back-to-back runs can verify the tool itself.
 #
@@ -357,7 +362,7 @@ prepare_sync_source "$PREVIEW_DEST"
 # =============================================================================
 
 echo ""
-echo "Upstream: $UPSTREAM ($UPSTREAM_BRANCH @ $UPSTREAM_SHORT)"
+echo "Source:   $UPSTREAM ($UPSTREAM_BRANCH @ $UPSTREAM_SHORT)"
 echo "Version:  $UPSTREAM_VERSION"
 echo "Fork:     $FORK"
 echo "Base:     $BASE"
@@ -426,9 +431,9 @@ if [[ $BOOTSTRAP -eq 1 ]]; then
 Creates \`plugins/superpowers/\` by copying the tracked plugin files from upstream, including \`.codex-plugin/plugin.json\`, \`assets/\`, and \`hooks/\`.
 
 Run via: \`scripts/sync-to-codex-plugin.sh --bootstrap\`
-Upstream commit: https://github.com/obra/superpowers/commit/$UPSTREAM_SHA
+Source commit: https://github.com/chankh70/superpowers-plus/commit/$UPSTREAM_SHA
 
-This is a one-time bootstrap. Subsequent syncs will be normal (non-bootstrap) runs using the same tracked upstream plugin files."
+This is a one-time bootstrap. Subsequent syncs will be normal (non-bootstrap) runs using the same tracked source plugin files."
 else
   COMMIT_TITLE="sync superpowers v$UPSTREAM_VERSION from upstream main @ $UPSTREAM_SHORT"
   PR_BODY="Automated sync from superpowers upstream \`main\` @ \`$UPSTREAM_SHORT\` (v$UPSTREAM_VERSION).
@@ -436,15 +441,15 @@ else
 Copies the tracked plugin files from upstream, including the committed Codex manifest, assets, and hooks.
 
 Run via: \`scripts/sync-to-codex-plugin.sh\`
-Upstream commit: https://github.com/obra/superpowers/commit/$UPSTREAM_SHA
+Source commit: https://github.com/chankh70/superpowers-plus/commit/$UPSTREAM_SHA
 
-Running the sync tool again against the same upstream SHA should produce a PR with an identical diff — use that to verify the tool is behaving."
+Running the sync tool again against the same source SHA should produce a PR with an identical diff — use that to verify the tool is behaving."
 fi
 
 git commit --quiet -m "$COMMIT_TITLE
 
 Automated sync via scripts/sync-to-codex-plugin.sh
-Upstream: https://github.com/obra/superpowers/commit/$UPSTREAM_SHA
+Source: https://github.com/chankh70/superpowers-plus/commit/$UPSTREAM_SHA
 Branch:   $SYNC_BRANCH"
 
 echo "Pushing $SYNC_BRANCH to $FORK..."

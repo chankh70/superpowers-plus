@@ -21,8 +21,16 @@ Subagent (general-purpose):
     |----------|------------------|
     | Completeness | TODOs, placeholders, incomplete tasks, missing steps |
     | Spec Alignment | Plan covers spec requirements, no major scope creep |
+    | Correctness | Logic and data flow are sound; any code snippets are correct to the level of detail the plan commits to — API/method signatures exist as written, types line up, edge cases and error paths are addressed |
+    | Consistency | Plan is internally unambiguous and contradiction-free; aligns with existing functionality, naming, and conventions without conflicts |
     | Task Decomposition | Tasks have clear boundaries, steps are actionable |
     | Buildability | Could an engineer follow this plan without getting stuck? |
+
+    ## Code Snippet Review
+
+    If the plan contains code snippets, perform a code review on each snippet in the context of the current project and its source code. Check correctness, fit with existing patterns and conventions, naming, error handling, edge cases, and integration with the surrounding codebase. Call out bugs, anti-patterns, and places where the snippet won't work as written against the actual code it would land in. Reference specific files, symbols, or functions from the project when relevant.
+
+    Produce a single review that covers both the plan and (where applicable) the code, with concrete, actionable findings rather than vague concerns.
 
     ## Calibration
 

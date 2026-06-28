@@ -1,6 +1,6 @@
 {
-  "name": "superpowers",
-  "version": "6.0.3",
+  "name": "superpowers-plus",
+  "version": "6.0.4",
   "description": "Superpowers skills and runtime bootstrap for coding agents",
   "type": "module",
   "main": ".opencode/plugins/superpowers.js",
@@ -12,6 +12,19 @@
     "collaboration",
     "workflow"
   ],
+  "scripts": {
+    "test": "bash tests/run-all.sh",
+    "test:brainstorm-server": "cd tests/brainstorm-server && ([ -d node_modules ] || npm install --no-audit --no-fund) && npm test --silent",
+    "test:codex-plugin-sync": "bash tests/codex-plugin-sync/test-sync-to-codex-plugin.sh",
+    "test:opencode": "bash tests/opencode/run-tests.sh",
+    "test:claude-code": "bash tests/claude-code/run-skill-tests.sh",
+    "test:hooks": "bash tests/hooks/test-session-start.sh",
+    "test:shell-lint": "bash tests/shell-lint/test-lint-shell.sh",
+    "test:explicit-skill-requests": "bash tests/explicit-skill-requests/run-all.sh",
+    "test:kimi": "bash tests/kimi/run-tests.sh",
+    "test:antigravity": "bash tests/antigravity/run-tests.sh",
+    "test:pi": "cd tests/pi && node test-pi-extension.mjs"
+  },
   "pi": {
     "extensions": [
       "./.pi/extensions/superpowers.ts"
